@@ -1,162 +1,539 @@
-; GLOBAL COMMANDS NEEDED TO LOAD FIRST::
+;GLOBAL COMMANDS NEEDED TO LOAD FIRST::
 
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
 SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
 SetTitleMatchMode 2   ;sets window title matching (for #IfWinActive) to partial matches
 
+; add file explorer to a group called 'Explorer', as it has multiple ahk classes
+GroupAdd, Explorer, ahk_class CabinetWClass
+GroupAdd, Explorer, ahk_class ExploreWClass
+Return
 ;=====================================================================================================
 ;=====================================================================================================
 
-;TEMP while windows key aint working.
-F8:: Send {LWin}
-F9:: Send #d
+;-------------------------
+; loading / editing AHK script
+;-------------------------
 
-;OPENING DOCUMENTS AND FOLDERS
+;-------------------------
+; F KEYS
+;-------------------------
 
-; F1:: Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Jay general methods & code
-; F2:: Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Jay other documents
-F3:: Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\OMD
+; f8:: Send {LWin} ;now debugger shortcut in VSCode - hash out unless I"m on my keyboard that has broken winkey.
 
-; open outlook if its not open already, otherwise just switch to open window
-F7:: 
-if WinExist("Outlook")
-    WinActivate ; use the window found above
+; temp hotstrings for current project - "open current folder" and "open current code" in dragon
+^+f8:: Run "C:\dev\r\packages\ausmodels\dev"
+^+f9:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\dev\r\rob\line-outages-PBI\GEN-737"
+^+f10:: Run C:\dev\r\packages\ausmodels\dev\
+^+f11:: Run C:\dev\r\packages\ausmodels\dev\compare-model-outputs
+^+!f12:: Run C:\dev\r\packages\ausmodels\dev\model-outputs
+
+; rest
+!f1:: Run C:\dev\r\jon\aussie_models\utility_wind_solar_curt_combined
+!f2:: Run C:\dev\r\packages\ausmodels\dev
+;!f3:: Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\
+!f4:: Run C:\dev\r
+!f5:: Run C:\Users\Owner\Downloads\
+;!f12:: Run C:\Program Files (x86)\Common Files\Nuance\NaturallySpeaking15\dragonbar.exe
+; !f12:: Run C:\Program Files (x86)\Common Files\Nuance\NaturallySpeaking15\dragonbar_exe_renamedToAvoidWinkeyProblem.exe
+
+f1:: Run C:\Users\Owner\Documents
+f2:: Run C:\Users\Owner\Downloads
+;f2:: Send {LWinDown} {tab} {LWinUp} ; Show windows including virtual desktops
+f3::
+ Send {LWinDown} {r} {LWinUp} ; paste clipboard into Run.
+ Sleep 500
+ Send ^v
+ Sleep 500
+ Send {enter}
+f5:: Send !{f4}
+F7:: Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+
+f9:: #+s ; snipping tool
+
+; CHROME: switch to open program if there is one, otherwise open
+f12:: 
+if WinExist("Google Chrome")
+  WinActivate 
 else
-    Run C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Outlook.lnk
+  Run C:\Program Files\Google\Chrome\Application\chrome.exe
 Return
+^+F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Profile 1"
++F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Default"
 
-; Repeat for teams
-!F7:: 
-if WinExist("Teams")
-    WinActivate ; use the window found above
-else
-  Run C:\Users\jay.ruffell\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Microsoft Teams.lnk
+
+; VS Code: specific workspaces (more below tho)
+^f1:: 
+ Send {CtrlUp} {LWin}  
+ Sleep 1000 
+ Send {Down} 
+ Sleep 1000 
+ Send {Right}
 Return
-
-; Opening via hotstrings - URLs
-
-:*:`;ct:: ; Close Teams - quikly switch to and then back again to current app if annoying popup shows up
-if WinExist("Teams")
-  WinActivate
-  Sleep, 2000
-  Send !{tab}
-Return
-
-;------------------------------------------------------------------------
-; DICTATION: if word or outlook, use the in-app dictation shortcuts. otherwise open up a word doc especially for dication to copy across
-F1:: Send !e{2}{d}{d} ; outlook: message not popped out
-F2:: Send !h{d}{d} ; outlook: message popped out, or word
-:*:`;dic:: 
-    Run C:\Users\jay.ruffell\OneDrive - OneWorkplace\Desktop\dictation.docx  
-    WinWaitActive, dictation
-    Send !h{d}{d}
-Return ; dictation scratchpad
  
-; original code, not working now for unkonwn reasons. 'if' statements aren't running for outlook windows
-; :*:`;dic:: 
-;  if WinActive("Outlook")
-;    Send !e{2}{d}{d}
-;  if WinActive("Message")
-;    Send !h{d}{d} 
-;  if WinActive("Word")
-;    Send !h{d}{d}
-;  else {
-;    Run C:\Users\jay.ruffell\OneDrive - OneWorkplace\Desktop\dictation.docx  
-;    WinWaitActive, dictation
-;    Send !h{d}{d}
-;  }
-; Return
-; for using scratchpad, select dictated text and send back to orig app
-:*:`;sb:: 
-  Send ^a
-  Sleep 200
-  Send ^x
-  Sleep 200
-  Send !{tab}
+; windows key - NB can just do Send {LWin} if I map straight to an F-key
+; ^f2:: Send {LWinDown} {LWinUp} ; not working
+
+; Reference docs
+^f3:: Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\reference docs
+
+; FILE EXPLORER: switch to open program if there is one, otherwise open
+^f4:: 
+if WinExist("ahk_group Explorer") ;group is defined at top of script
+  WinActivate 
+else
+  Send #{e}
+Return
+
+; WORD: switch to open program if there is one, otherwise open
+^f5:: 
+if WinExist("Word")
+  WinActivate 
+else
+  Run "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"
+Return
+
+; NOTEPAD: switch to open program if there is one, otherwise open
+^f6:: 
+  if WinExist("Notepad")
+; if WinExist("Jarte")
+  WinActivate 
+else
+  Run C:\Windows\system32\notepad.exe
+;  Run C:\Program Files (x86)\Jarte\Jarte.exe
+Return
+
+/*
+; RSTUDIO: switch to open program if there is one, otherwise open project I work on most often
+^f6:: 
+if WinExist("RStudio")
+  WinActivate 
+else
+  Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\Projects\windfarm model\windfarm model.Rproj
+  ;Run C:\Program Files\RStudio\bin\rstudio.exe
+Return
+*/
+; VS Code: switch to open program if there is one, otherwise open
+^f7:: 
+if WinExist("Visual Studio Code")
+  WinActivate
+else
+  Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe
+Return
+
+; Define a hotkey to activate Power BI Desktop using its window title
+^F8:: ; This sets the hotkey to Ctrl + Alt + P. You can change it to any other combination.
+    IfWinExist, Power BI Desktop
+    {
+        WinActivate
+    }
+    else
+    {
+        MsgBox, "haven't set up functionality to open PBI... just got to find the executable."
+    }
+return
+
+#+f8:: Run "C:\Program Files\Microsoft Office\Root\Office16\EXCEL.EXE"
+; open AHK script to edit with VS Code
+!^f8:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\autohotkey\" 
+; reload AHK script
+!^f9:: Run "C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\autohotkey\autohotkey script_ROG.ahk" 
+^f10:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\dev\r\jay\VS-Code-scratchpad\"
+;stacks report/power notes stuff
+^F11:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --new-window https://app.powerbi.com/groups/df569d6a-0f19-4d8e-b25f-9e784c1b0d84/reports/1be3317c-b5a9-4b58-ac0f-4bc28e729677/ReportSectiondfb2df74632fbf978b37
+^F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --new-window https://haastenergy.atlassian.net/wiki/spaces/ASR/overview
+#+F11:: Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\reference docs\DUID info.xlsx
+
+; scripts starting "shift + alt + x"
++!1:: Run C:\Program Files\Google\Chrome\Application\chrome.exe https://www.asxenergy.com.au/futures_au
++!2:: Run C:\Program Files\Google\Chrome\Application\chrome.exe https://app.powerbi.com/groups/df569d6a-0f19-4d8e-b25f-9e784c1b0d84/reports/f49573c7-5e50-4429-aec3-8e5b72ab6567/ReportSection ;asx prices
++!3:: Run C:\Program Files\Google\Chrome\Application\chrome.exe https://app.powerbi.com/groups/df569d6a-0f19-4d8e-b25f-9e784c1b0d84/list ;all reports
++!4:: Run C:\Program Files\Google\Chrome\Application\chrome.exe https://app.powerbi.com/groups/df569d6a-0f19-4d8e-b25f-9e784c1b0d84/reports/891a5a05-eb67-44d5-8ebf-a35a20b883e8/ReportSection ;aupm
+
+; Some hacks for feeding into Dragon commands (which won't let me do Windows Key + x commands)
+#+!d:: Send {LWinDown} {d} {LWinUp}
+#+!r:: Send {LWinDown} {r} {LWinUp}
+
+;-------------------------
+; autoomating "snip it quad" commands
+;-------------------------
+
+; HELPER FUNS ----
+SnippingTool() { ; hack, was having with calling this another way
+  Send #+s
+}
+HoldDownMouseAndMove(Xfrom, Yfrom, Xto, Yto) ;X Y are coords passed to native Mouseclick fn.
+{
+  MouseClick, left, Xfrom, Yfrom, ,  , D
+  Sleep 1000
+  MouseClick, left, Xto, Yto, ,  , U
+}
+SnipItQuad(Xfrom, Yfrom, Xto, Yto) {
+  SnippingTool()
+  Sleep 1000
+  HoldDownMouseAndMove(Xfrom, Yfrom, Xto, Yto)
+}
+
+;; for testing each of the below:
+; ^+F1:: SnipItQuad_5minPrices() ; to test
+SnipItQuad_PriceLast3d() {
+  ; NB use window spy 'screen' values here!
+  SnipItQuad(2840, 1200, 3430, 1645)
+}
+SnipItQuad_7dSummary() {
+  ; NB use window spy 'screen' values here!
+  SnipItQuad(1569, 600, 3730, 2090)
+}
+SnipItQuad_5minPrices() {
+  ; NB use window spy 'screen' values here!
+  SnipItQuad(1580, 1502, 3730, 2090)
+}
+SnipItQuad_PortfolioOffers() {
+  ; NB use window spy 'screen' values here!
+  SnipItQuad(987, 736, 3639, 2090)
+}
+
+SearchInConfluence(string) { ;to get to correct place to paste in. Also hits down arrow, so it actually shd select the line immediately below the string
+  Send ^f
+  Sleep 500
+  Send, %string%
+  Sleep 500
+  Send {Enter}
+  Send {Escape}
+  Send {Down}
+}
+; ^+F2:: SearchInConfluence("3. Portfolio Offers") ; to test
+CopyFromStacksAndPasteInConfluence(figureNumber) {
+  ; figure number is numeric, 0-3 at mo
+  
+  WinActivate, bid stacks
+  Sleep 1000
+  
+  ; click relevant tab on stacks report
+  If (figureNumber = 0) {
+    MouseClick, Left, 667, 603 ; daily price tab
+  }
+  If (figureNumber = 1) {
+    MouseClick, Left, 667, 690 ; bids tab
+  }
+  If (figureNumber = 2) {
+    MouseClick, Left, 667, 690 ; bids tab
+  }
+  If (figureNumber = 3) {
+    MouseClick, Left, 667, 790 ; portfolio offers tab
+  }
+  Sleep 1000
+
+; snip
+If (figureNumber = 0) {
+    SnipItQuad_PriceLast3d()
+  }
+  If (figureNumber = 1) {
+    SnipItQuad_7dSummary()
+  }
+  If (figureNumber = 2) {
+    HoldDownMouseAndMove(1077, 647, 1560, 630) ; convert to yday-only prices
+    Sleep 1000
+    MouseClick, Left, 1077, 1250
+    Sleep 1000
+    SnipItQuad_5minPrices()
+  }
+  If (figureNumber = 3) {
+    SnipItQuad_PortfolioOffers()
+  }
+  Sleep 1000
+
+  MouseClick, Left, 3500, 1800 ; click on snip when it comes up in notificationsd - annoying hack cos wasn't pasting properly
+  Sleep 2000
+
+  ; paste in confluence
+  WinActivate, Edit - 
+  Sleep 1000
+  If (figureNumber = 0) {
+    Send ^{Home}
+  }
+  If (figureNumber = 1) {
+    SearchInConfluence("1. Daily view")
+  }
+  If (figureNumber = 2) {
+    SearchInConfluence("2. 5min prices")
+  }
+  If (figureNumber = 3) {
+    SearchInConfluence("3. Portfolio Offers")
+  }
   Sleep 1000
   Send ^v
-Return
-;------------------------------------------------------------------------
-:*:`;ftc:: ; forticlient VPN login - opens forticlient then logs in
-Run C:\Program Files\Fortinet\FortiClient\FortiClient.exe
-    Sleep 6000 
-    Send {tab}{tab}
-    Sleep 1000
-    Send jay.ruffell
-    Send {tab}
-    Sleep 1000
-    Send Spring{@}21{!}
-    Send {enter}
-    Sleep 2000
-    Send !{F4}
-Return
 
-:*:`;adh:: ; ads data hub
- Run C:\Program Files\Google\Chrome\Application\chrome.exe https://adsdatahub.google.com/#/queries
-Return
+  WinActivate, Snipping Tool ; sometimes need to do "copy switch and paste" from this window when above paste doesnt work
 
-:*:`;bq:: ; ads data hub
- Run C:\Program Files\Google\Chrome\Application\chrome.exe https://console.cloud.google.com/bigquery?_ga=2.62333803.698029576.1586206027-1272128723.1544390697&_gac=1.175792662.1586221277.EAIaIQobChMIk76e1Y7V6AIVlouPCh11xwZ5EAAYASAAEgLTDfD_BwE&project=omg-newzealand-adsdatahub&supportedpurview=project&p=omg-newzealand-adsdatahub&d=twg_nz_the_warehouse_adh&page=dataset
+  SoundBeep
+}
+
+; AND WITHOUT FURTHER ADO...  "populate visuals" in dragon
+;  *** should have conf page open in Edit mode (win title starting 'Edit - ' ***
+;  *** and bid stacks dash also open ***
+^+F5:: CopyFromStacksAndPasteInConfluence(0)
+^+F1:: CopyFromStacksAndPasteInConfluence(1)
+^+F2:: CopyFromStacksAndPasteInConfluence(2)
+^+F3:: CopyFromStacksAndPasteInConfluence(3)
+
+; another convenience functiuon - 'top of stacks report' in DNS
+^+F4:: 
+  SearchInConfluence("Summary")
 Return
 
+;-------------------------
+; clicking windows and taskbar – "win one", "Win two" etc.
+;-------------------------
 
-:*:`;sbd:: ; When running query in ADH, in table name field after naming table and then putting a space after, Specify sandbox data with '_sandbox' suffix of table name, then set start and end date as full range available, then run. 
- Send {backspace}
- Send _sandbox
- Sleep 500
- Send {tab}
- Sleep 500
- Send Aug 17, 2018
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send Sep 18, 2018
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send {enter}
+; Function to click win 1, win 2 etc. calculates the different window coords by multiplying the window number by the panel height (height in taskbar - can calc using window spy) so easy to update for different screen sizes.
+ClickTaskbarWin_vert(win_num) ;tb on side of screen
+{
+  ;-----------------
+  ; UPDATE THESE IF SCREEN OR TASKBAR POS CHANGES
+  xcoord := 3700 ;3381
+  ycoord_win1 := 285 ;119
+  panel_height := 120 ;80
+  ;-----------------
+
+  ycoord := ycoord_win1 + panel_height*(win_num-1)
+  CoordMode, Mouse, Screen
+  MouseClick, left, xcoord, ycoord
+  ; ;move to middle of selected window
+  ; ; not working - move to middle of screen instead
+  ; WinGetPos, x_0, y_0, x_max, y_max, A
+  ; MouseMove, (x_max - x_0)*0.5, (x_max - x_0)*0.5
+  MouseMove, A_ScreenWidth*0.5, A_ScreenHeight*0.5 
+  ; restore default/
+  CoordMode, Mouse, Window 
+}
+; Function to click win 1, win 2 etc. calculates the different window coords by multiplying the window number by the panel height (height in taskbar - can calc using window spy) so easy to update for different screen sizes.
+ClickTaskbarWin_hor(win_num) ;at top/botty
+{
+  ;-----------------
+  ; UPDATE THESE IF SCREEN OR TASKBAR POS CHANGES
+  ycoord := 50 ;50 for top, 2100 for botty
+  xcoord_win1 := 460
+  panel_width := 410
+  ;-----------------
+
+  xcoord := xcoord_win1 + panel_width*(win_num-1)
+  CoordMode, Mouse, Screen
+  MouseClick, left, xcoord, ycoord
+  ; ;move to middle of selected window
+  ; ; not working - move to middle of screen instead
+  ; WinGetPos, x_0, y_0, x_max, y_max, A
+  ; MouseMove, (x_max - x_0)*0.5, (x_max - x_0)*0.5
+  ;MouseMove, A_ScreenWidth*0.5, A_ScreenHeight*0.5 
+  ; restore default/
+  CoordMode, Mouse, Window 
+}
+^!F1::ClickTaskbarWin_hor(1) ;_hor or _vert
+^!F2::ClickTaskbarWin_hor(2)
+^!F3::ClickTaskbarWin_hor(3)
+^!F4::ClickTaskbarWin_hor(4)
+^!F5::ClickTaskbarWin_hor(5)
+^!F6::ClickTaskbarWin_hor(6)
+^!F7::ClickTaskbarWin_hor(7)
+#!F8::ClickTaskbarWin_hor(8)
+;#!F9::ClickTaskbarWin_hor(9)
+;+!F9::ClickTaskbarWin_vert(9)
+
+;-------------------------
+; moving windows around monitors - replaces shitty win11 commands
+;-------------------------
+
+; Commands for current screen:
+#Up::WinMaximize, A  ; maximise active - "win maximise" in dragon
+#Down::WinRestore, A  ; restore active  - "win restore" in dragon
+#Right::
+  WinMaximize, A  ; RH of screen -  "win right" in dragon
+  Sleep 500
+  Send #{right}
+  Sleep 500
+  Send {Esc}
+Return
+#Left::
+  WinMaximize, A  ; LH of screen -  "win left" in dragon
+  Sleep 500
+  Send #{left}
+  Sleep 500
+  Send {Esc}
+Return
+; centre window -  "win centre" in dragon
+; from https://superuser.com/questions/403187/need-autohotkey-to-center-active-window
+#!Up::
+  WinRestore, A ;jay addition, doesn't work when max'd
+  CenterActiveWindow()
+Return
+CenterActiveWindow()
+{
+    windowWidth := A_ScreenWidth * 0.7 ; desired width
+    windowHeight := A_ScreenHeight * 0.9 ; desired height
+    WinGetTitle, windowName, A
+    WinMove, %windowName%, , A_ScreenWidth/2-(windowWidth/2), A_ScreenHeight/2-(windowHeight/2), windowWidth, windowHeight
+}
+
+; Same commands as above, but move to other screen first.
+; dragon commands same but suffix with "other"
+; **BASED ON 2 MONITORS - NEED TO UPDATE IF >2 MONITORS"
+; note if I just want to move to the other screen without maximising/right half/left path then just do the native Windows command, 
++#Up::  
+   WinMaximize, A
+   Send {Shift down}{LWin down}{Left}{Shift up}{LWin up} ; will move to left OR right monitor IF ONLY 2 MONITORS
+  WinMaximize, A  ; maximise active
+Return
++#Right::
+  WinMaximize, A  
+   Send {Shift down}{LWin down}{Left}{Shift up}{LWin up} ; will move to left OR right monitor IF ONLY 2 MONITORS
+  WinMaximize, A  ; RH of screen
+  Sleep 1000
+  Send #{right}
+  Sleep 500
+  Send {Esc}
+Return
++#Left::  
+  WinMaximize, A
+   Send {Shift down}{LWin down}{Left}{Shift up}{LWin up} ; will move to left OR right monitor IF ONLY 2 MONITORS
+  WinMaximize, A  ; LH of screen
+  Sleep 1000
+  Send #{left}
+  Sleep 500
+  Send {Esc}
 Return
 
-:*:`;m2:: ; When running query in ADH, in table name field after naming table and then putting a space after, Specify daternage with '_may20' suffix of table name, then set start and end date as this range then run. EDIT: no longer adding suffix.
- ;Send {backspace}
- ;Send _may20
- Sleep 500
- Send {tab}
- Sleep 500
- Send May 1, 2020
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send May 31, 2020
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send {tab}
- Sleep 500
- Send {enter}
+; maximise across both screens.  -  "win max both" in dragon
+; also put in function just for sake of it - copying CenterActiveWindow() above.
+; https://stackoverflow.com/questions/9828808/how-can-i-maximize-a-window-across-multiple-monitors
+^!#Up::
+  MaxBothScreens()
+return
+MaxBothScreens()
+{
+  pixelOffsetFromTop := 90 ; for if I have taskbar and dragonbar on top.
+  pixelStretchDownFromBottom := 5 ; if I wanna stretch win down slightly below bottom of normal screen.
+  WinGetActiveTitle, Title
+  WinRestore, %Title%
+  SysGet, X1, 76 ; see SysGet documentation https://www.autohotkey.com/docs/commands/SysGet.htm for what numbers mean.
+  SysGet, Y1, 77
+  SysGet, Width, 78
+  SysGet, Height, 1 ; SysGet 1 is equivalent to A_ScreenHeight as used above; see SysGet documentation.
+  WinMove, %Title%,, X1, Y1 + pixelOffsetFromTop, Width*1, Height*1 - pixelOffsetFromTop + pixelStretchDownFromBottom ; Width*x, Height*x - in case I want to have not maximised.
+}
+
+
+;-------------------------
+; Ez2view - can't be bothered having in IfWinActive
+;-------------------------
+
+;!+^f8:: Run C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Global-Roam\ez2view Australia\ez2view Australia.lnk
+!+^f8::
+if WinExist("ez2view")
+  WinActivate
 Return
 
-:*:`;tm:: ; task manager 
- Run C:\Program Files\Google\Chrome\Application\chrome.exe https://app.asana.com/0/409477042493367/list
+; time travel helpers
+clickNEMTime() {
+  MouseClick, left, 3150, 70
+}
+clickTimeTravelButton() { 
+  MouseClick, left, 3600, 230 
+}
+clickJumpToTimeButton() {
+  MouseClick, left, 3550, 350
+}
+sleepForSetInterval() {
+  Sleep 1500
+}
+highlightTime() {
+  MouseClick, left, 280, 440
+}
+
+;start time travelling
+:*:`;estt::
+ clickNEMTime()
+ sleepForSetInterval()
+ clickTimeTravelButton()
+ sleepForSetInterval()
+ clickJumpToTimeButton()
+ sleepForSetInterval()
+ highlightTime()
 Return
 
-:*:`;uec:: 
- Run C:\Program Files\Google\Chrome\Application\chrome.exe https://170415891119.signin.aws.amazon.com/console ;AWS console
+;stop time travelling
+:*:`;ettt::
+ clickNEMTime()
+ sleepForSetInterval()
+ clickTimeTravelButton()
+Return
+
+;keep time travelling - for when you're already in t-t mode
+:*:`;ektt:: 
+ clickNEMTime()
+ sleepForSetInterval()
+ clickJumpToTimeButton()
+ sleepForSetInterval()
+ highlightTime()
+Return
+
+; ; prev dispatch itnerval
+; :*:`;epd:: 
+;  MouseClick, left, 3000, 25
+;  Sleep 300
+;  MouseClick, left, 2600, 225
+; Return
+
+; ; next dispatch itnerval
+; :*:`;end:: 
+;  MouseClick, left, 3000, 25
+;  Sleep 300
+;  MouseClick, left, 2800, 225
+; Return
+
+
+
+
+
+;-------------------------
+; HOTSTRINGS
+;-------------------------
+
+; note - the if not statement isn't working! poss cos deprecated... perhaps add all possible 
+; programs taht I do want instead with an 'or', instead of those I don't... per example here
+; (https://www.autohotkey.com/docs/commands/WinActive.htm)
+:*:uu::
+if not WinActive("ahk_group Explorer")
+    Send {_}
+    Send {left 2}
+    Send {del}
+    Send {right}
+Return
+
+:*:`;tj::{enter}{enter}Thanks,{enter}{enter}Jay
+
+:*:`;cf:: ;confluence. "general" and "r" spaces only are relevant to me
+ Run C:\Program Files\Google\Chrome\Application\chrome.exe https://haastenergy.atlassian.net/wiki/spaces/R/overview
+Return
+
+:*:`;tm:: ;time management via jira
+ Run C:\Program Files\Google\Chrome\Application\chrome.exe https://haastenergy.atlassian.net/jira/software/c/projects/GEN/boards/5?assignee=60c674cfa01e11006a39ab36
+Return
+
+:*:`;gm:: 
+ Run C:\Program Files\Google\Chrome\Application\chrome.exe https://gmail.com
+Return
+
+:*:`;gc:: 
+ Run C:\Program Files\Google\Chrome\Application\chrome.exe https://calendar.google.com/calendar/u/0/r/week
+Return
+
+:*:`;do:: 
+ Run C:\Users\Owner\Documents
+Return
+
+:*:`;dl:: 
+ Run C:\Users\Owner\Downloads
 Return
 
 :*:`;ri:: 
@@ -167,1098 +544,628 @@ Return
  Run C:\Program Files\Google\Chrome\Application\chrome.exe https://s3.console.aws.amazon.com/s3/buckets/nz-omg-ann-aipl-staging/digital_pathway_reporting/?region=ap-southeast-2&tab=overview ;S3
 Return
 
-:*:`;tt:: 
- Run C:\Users\jay.ruffell\OneDrive - OneWorkplace\Desktop\TODAYS TASKS.docx
-Return
-
 ; Opening via hotstrings - other
 
-:*:`;cmi:: 
- Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Jay general methods & code\annalect-data-science-cmi-dashboard
-Return
-
-:*:`;op:: 
-  Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\OMD\Open Polytechnic\Jay analyses
-Return
-
-:*:`;sky:: 
- ;Run O:\OMD\Annalect\Clients\OMD\SKY\Jay analyses\ 
- Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\OMD\SKY\Jay analyses\ 
-Return
-
-:*:`;aai:: 
- ;Run O:\OMD\Annalect\Clients\OMD\AA Insurance\Digi Attribution
- Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\OMD\AA Insurance\Digi Attribution
-Return
-
-:*:`;twg:: 
- ;Run O:\OMD\Annalect\Clients\OMD\TWG\Jay\Digi pathway
- Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\OMD\TWG\Jay\Digi pathway
-Return
-
-:*:`;gem:: 
- ;Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\Total Media\GE Money
- Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\Total Media\GE Money\Digital attribution 2020
-Return
-
-:*:`;sae:: ;save as excel - for csv files
- Send {alt} 
- Sleep 1000
- Send {f}
- Sleep 1000
- Send {alt} 
- Sleep 1000
- Send {a}
- Sleep 1000
- Send {y}{3}
- Sleep 1000
- Send {home}
- Sleep 1000
- Send {tab}
- Send {enter}
-Return
-
-:*:`;sky:: 
- Run \\100.97.137.78\nz_akl_omd\OMD\Annalect\Clients\OMD\SKY\Jay analyses\   ; sky folder
-Return
-
-:*:`;iam::170415891119 ; AWS IAM number
-:*:`;ep::5tatsMan{!}          ; ec2 pw - cloud R machine o(9otvN!)g
-:*:`;sp::5gGeB{;}C7nhFn)8o7RPpDGtsHlcYwolq51          ; ec2 pw  'subnet old' machine
-
-F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe
-
-
-;=====================================================================================================
-;=====================================================================================================
-
-;HOTKEYS TRIGGERED BY LONGPRESS OF INDIVIDUAL KEYS
-
-;see http://www.autohotkey.com/board/topic/80697-long-keypress-hotkeys-wo-modifiers/page-1 for full discussion, and some good e.g.s
-
-;1. Copy all by longpress of 'a':
-
-;$a::
-;SetKeyDelay, -1
-;KeyWait, a
-;return
-; $a Up::
-; If (A_PriorHotKey = "$a" AND A_TimeSincePriorHotkey < 750)
-;   Send a
-; else
-;   SendInput, {Ctrldown}a{Ctrlup} ; select all
-; return
-
-;2. {end} by longpress of ''':
-
-;$'::
-;KeyWait, '
-;return
-; $' Up::
-; If (A_PriorHotKey = "$'" AND A_TimeSincePriorHotkey < 750)
-;   Send `'
-; else
-;   SendInput, {End} 
-; return
-
-;3. {home} by longpress of ';':
-
-;$`;::
-;KeyWait, `;
-;return
-; $`; Up::
-; If (A_PriorHotKey = "$`;" AND A_TimeSincePriorHotkey < 750):
-;   Send `;
-; else
-;   SendInput, {Home} 
-; return
-
-;=====================================================================================================
-;=====================================================================================================
-
-;MISC
-
-:*:`;cc:: 
-MouseMove 900,500
-Sleep, 500
-Click
-Return					;click in centre of screen
-
-:*:`;sl:: 
- Send {home}
- Send +{end} 
-Return	          ;select line
-
-:*:`;dl:: 
- Send {home}
- Send +{end} 
- Send {delete}
- Send {backspace}
-Return	          ;delete line
-
-:*:`;cl:: 
- Send {home}
- Send +{end} 
- Send ^c
-Return	          ;copy line
-
-:*:`;xl:: 
- Send {home}
- Send +{end} 
- Send ^x
-Return	          ;select line
-
-:*:`;ah:: 
-MouseMove 3050,2300
-Sleep, 500
-Click right
-Return					;bring up autohotkey menu from taskbar
-
-:*:`;st:: 
- Run C:\Program Files\FreeCountdownTimer\FreeCountdownTimer.exe
- Sleep 200
-
-RAlt & down::
- Send {Ctrl Down}
- MouseClick,WheelDown,,,3,0,D,R   ;zoom in and out as per ctrl+mousescrolling (used in MS Word, for example)
- Send {Ctrl Up}
-Return
-
-RAlt & up::
- Send {Ctrl Down}
- MouseClick,WheelUp,,,3,0,D,R
- Send {Ctrl Up}
-Return
-
-RAlt & right:: 
- Send ^#{tab} 	;opens Aero 'flip 3d' to flip through open windows
-Return
-
-;###some keys for making keyboard naviagtion easier:----------------------------------------------
-
-;Capslock::
-;   Send {LCtrl Down}
-;   KeyWait, Capslock ; Maps caps to control. keywait waits until the Capslock button is released. BUT DOESNT WORK WHEN CAPSLOCK ARROW NAVIGATION (BELOW) IS ON.
-;   Send, {LCtrl Up}
-;Return
-
-;##Capslock plus middle row of LH keys: move up down left right by letter or word:
-;Capslock & k:: Send {up}	
-;Capslock & l:: Send {down}
-;Capslock & j:: Send {left}
-;Capslock & `;:: Send {right}
-;Capslock & h:: Send ^{left}
-;Capslock & ':: Send ^{right} 
-
-;##Capslock plus bottom row of LH keys: highlight left right up down by letter or word:
-;Capslock & n:: Send +{home}		
-;Capslock & RShift:: Send +{end}								
-;Capslock & m:: Send ^+{left}
-;Capslock & /:: Send ^+{right}
-;Capslock & ,:: Send +{up}
-;Capslock & .:: Send +{down}
-
-;##Capslock plus top row of LH keys: delete/backspace by letter or word:
-;Capslock & i:: Send {backspace}	
-;Capslock & o:: Send {delete}
-;Capslock & u:: Send ^{backspace}
-;Capslock & p:: Send ^{delete}
-;Capslock & y:: 
-;  Send +{home} 
-;  Send {delete}
-; Return
-;Capslock & [::
-;  Send +{end} 
-;  Send {delete}
-; Return
-
-;##Capslock plus middle row of LH keys: move up down left right by letter or word:
-Capslock & k:: Send {down}	
-Capslock & l:: Send {right}
-Capslock & j:: Send {left}
-Capslock & `;:: Send ^{right}
-Capslock & h:: Send ^{left}
-Capslock & ':: Send {end}  ;key for 'up' is in top row of keys below
-
-;##Capslock plus bottom row of LH keys: highlight left right up down by letter or word:
-Capslock & n:: Send +^{left}		
-Capslock & RShift:: Send +{end}								
-Capslock & m:: Send +{left}
-Capslock & /:: Send ^+{right}
-;Capslock & ,:: Send +{up}
-Capslock & .:: Send +{right}
-
-;##Capslock plus top row of LH keys: delete/backspace by letter or word:
-Capslock & i:: Send {up}	
-Capslock & o:: Send {delete}
-Capslock & u:: Send {backspace}
-Capslock & p:: Send ^{delete}
-Capslock & y:: Send ^{backspace}
-Capslock & [::
-  Send +{end} 
-  Send {delete}
- Return
-
-;-----------------------------------------------------
-
-;`:: Send !{tab}		;switch windows
-
-;:*:kl:: 
-;    Send {PgDn}		;using hotkeys for page down and page up. the asterisk means no ending (space or enter, for example) is required.
-;Return
-
-;:*:lk:: 
-;    Send {PgUp}			
-;Return
-
-
-;###hotstrings: 
-
+:*:`;ez::ez2view
+:*:`;jh::jay@haastenergy.com
 :*:`;rj::ruffell.jay@gmail.com
 :*:`;fp::Spring@21{!}
 :*:`;sp::altheg81
-:*:`;454::4548601499399117
-:*:`;5j::5 Janet Place
 :*:`;021::0210528720
 
-;:*?:  ::. `				; makes a full stop space after pressing space twice. BUT causing "PU" command to cause problems in IE11 for some reason.
+/*
+;-------------------------
+; slack: opening specific channel from anywhere
+;-------------------------
 
-^+!f::
-WinActivate, Internet Explorer
-Return 					;make chrome active window
-
-;F2:: 
-;Send {LWin}
-;Sleep, 300
-;Send {up}
-;Sleep, 300
-;Send {up}
-;Sleep, 300
-;Send {enter}          	;put comp to sleep 
-;Sleep, 300
-;Send {down}
-;Sleep, 300
-;Send {enter}
-;Return 
-
-#o:: Send E:\ArcGIS\Default1.gdb\	;output location for arcgis tools. Cant go inside ArcGIS code cos active 							;..window is tool name, not arcGIS name
-
-^`::
-Send {NumpadMult}			;switch to normal mode in dragon
-Sleep, 100
-Send m
-Sleep, 100
-Send n
-Return
-
->!c:: 
-WinActivate, View			; switches to free clipboard and clears clipboard
-Click right 70,220
-Send l
-Send !{tab}
-MouseMove 70,10
-Return
-
-^+!#m:: 
-WinActivate, View  
-MouseMove 70,70
-Sleep, 300
-Click
-MouseMove 70,10
-Return
-
-^+!#n:: 
-WinActivate, View
-MouseMove 70,85
-Sleep, 300
-Click
-MouseMove 70,10
-Return
-
-^+!#b:: 
-WinActivate, View
-MouseMove 70,100			; inserts free clipboard item 1-6
-Sleep, 300
-Click
-MouseMove 70,10
-Return
-
-^+!#v:: 
-WinActivate, View
-MouseMove 70,115
-Sleep, 300
-Click
-MouseMove 70,10
-Return
-
-^+!#c:: 
-WinActivate, View	
-MouseMove 70,130
-Sleep, 300
-Click
-MouseMove 70,10
-Return
-
-^+!#x:: 
-WinActivate, View
-MouseMove 70,145
-Sleep, 300
-Click
-MouseMove 70,10
-Return
-
-
-;right click at caret (cursor) plus optional offsets - using for navigating from contents page in Microsoft Word (see Vocola code):
-!^+h::
-xoff=0
-yoff=0
-MouseGetPos,X,Y
-MouseMove,(A_CaretX-xoff),(A_CaretY-yoff)
-click right
-;MouseMove,(X),(Y)   returns to orig pos... Don't need
-Return
-
-f5::
-Send !{f4}				; close
-Return
-
-::5 j:: 5 Janet Place, Laingholm
-
-#p::
-Send {Lwin}
-Sleep, 200 
-Send {up} 
-Send 	{enter}
-Return					; program files
-
-#r::					; my recent documents
-Send #r
-Sleep, 200
-Send shell:recent
-Sleep, 200
-Send {enter}
-Return
-
-#left::
-WinGet, mm, MinMax, A
-WinRestore, A
-WinGetPos, X, Y,,,A
-WinMove, A,, X-A_ScreenWidth, Y
-if(mm = 1){
-    WinMaximize, A
-}
-return
-					;moves window from right to left monitor
-
-#right::
-WinGet, mm, MinMax, A
-WinRestore, A
-WinGetPos, X, Y,,,A
-WinMove, A,, X+A_ScreenWidth, Y
-if(mm = 1){
-    WinMaximize, A
-}
-return
-					
-
-^+!e:: Send ruffell.jay@gmail.com             ;email address
-
-;=====================================================================================================
-;=====================================================================================================
-
-
-;FOXIT
-
-#IfWinActive ahk_class classFoxitReader					; Makes fullscreen and set to highlight for FOXIT ONLY. all commands bewteen the two IfWinActive commands only apply to foxit.
-f11::
-Send {f11}
-Send !ch
-Send !vz {enter}200{enter}
-Return
-#IfWinActive							
-
-;=====================================================================================================
-;=====================================================================================================
-
-
-;PDF-XCHANGE
-
-#IfWinActive XChange
-
-F10:: 
- Send {F11} 		;toggle menu bar
-Return
-
-F11:: 
- Send {F12}		;toggle full screen
-Return
-
-#IfWinActive							
-
-;=====================================================================================================
-;=====================================================================================================
-
-
-;TINN R/R
-
-^l::
-WinActivate,R Console
-WinActivate,Tinn
-Return 					;make Tinn R active window and R 'next active' 
-
-
-#IfWinActive Tinn			; applies only to TinnR from now on
-
-^y::
-Send ^+z
-Return
-
-^p:: WinActivate,Word			; make Microsoft Word the active window
-^b:: WinActivate, R Graphics		; make Graphics the active window
-
-^m:: 
-Send {home}+{end}
-Send ^c
-WinActivate,R Console
-Send ^v
-Send {enter}  
-Sleep, 500
-WinActivate,Tinn
-Send {home}{down}
-Return					;send line to R:
-
-^k:: 
-Send ^c
-WinActivate,R Console
-Send ^v
-Send {enter}  
-Sleep, 500
-WinActivate,Tinn
-Send {end}{home}
-Return					;send selection to R:
-
-^#m:: 
-Send {home}+{end}
-Send ^c
-WinActivate,R Console
-Send ^v
-Send {enter}  
-Sleep, 500
-WinActivate,Tinn
-Send {home}{down}
-WinActivate,R Graphics
-Return					;send line and make graph window active:
-
-^#k:: 
-Send ^c
-WinActivate,R Console
-Send ^v
-Send {enter}  
-Sleep, 500
-WinActivate,Tinn
-Send {end}{home}
-WinActivate,R Graphics
-Return					;send seln and make graph window active:
-
-
-^n:: Send {Home}+{End}			;highlight line:
-					
-
-^!c:: Send !r {enter}{down}{enter}       ;connect to R
-
-^!m::
-WinMaximize, A			
-Send !{tab}
-WinGet, mm, MinMax, A
-WinRestore, A
-WinGetPos, X, Y,,,A
-WinMove, A,, X-A_ScreenWidth, Y
-if(mm = 1){
-    WinMaximize, A
-}
-WinMaximize, A
-Send !{tab}
-Return   				; Open Tinn and R on diff monitors and maximise
-
-::b1..::Bird10$
-::b3..::Bird30$
-::ne..::NAT.EX
-::nb..::NAT.BROAD
-::neb..::NAT.EX.BROAD
-::nbt..::NAT.BROAD.TEA
-::nebt..::NAT.EX.BROAD.TEA
-::nf..::NAT.FOREST
-::sn..::SP.NAT
-::st..::SP.TOT
-::si..::SP.INT				;variable names
-
-
-#IfWinActive
-					
-;=====================================================================================================
-;=====================================================================================================
-
-;RStudio
-
-#IfWinActive RStudio			; applies only to RStudio from now on
-
-
-^w::
- Send ^{w}				;close tab
-Return
-
-RAlt:: 					; send lines with right alt key
-  Send ^{enter}
-Return
-
-^tab:: 				;switch tabs
-  Send ^!{down}
-Return
-
-^e::				;cancel operation (switch to code window, press escape, and switch back to source)
- Send ^2
- Send {escape}
- Send ^1
-Return
-
-^b:: WinActivate, R Graphics		; make Graphics the active window
-
-^g::								; use 'windows()' function to call graphics window (after closing existing graph windows), then run code, then view the plot in this window
-  Send ^2
-  Send windows()
+; EDIT: not working, cos ctrl + s stops save!
+; CTRL + S + {first letter of slack thread name} - need #If 
+; method below to use 2 keys with a modifier
+#If, GetKeyState("Ctrl") ;start of context sensitive hotkeys
+s & j::
+  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+  Sleep 1500
+  Send ^k
+  Sleep 1500
+  Send j     ; for jon
+  Sleep 1500
   Send {enter}
-  WinWaitActive, R Graphics
-  ;Send !{tab}
-  WinActivate, RStudio
-  WinWaitActive, RStudio
-  Send ^1
-  Send ^{enter}
-  Sleep 200
-;  Send !{tab}
-  WinActivate, R Graphics
-Return
+return
+#If ;end of context sensitive hotkeys
 
-;^p:: WinActivate,Word			; make Microsoft Word the active window
+#If, GetKeyState("Ctrl") ;start of context sensitive hotkeys
+s & e::
+  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+  Sleep 1500
+  Send ^k
+  Sleep 1500
+  Send e   ; for elbert 
+  Sleep 1500
+  Send {enter}
+return
+#If ;end of context sensitive hotkeys
 
-^n:: Send {Home}+{End}			;highlight line:
+#If, GetKeyState("Ctrl") ;start of context sensitive hotkeys
+s & r::
+  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+  Sleep 1500
+  Send ^k
+  Sleep 1500
+  Send r    ;for rob
+  Sleep 1500
+  Send {enter}
+return
+#If ;end of context sensitive hotkeys
 
-; ~Enter::
-; If (A_PriorHotKey = A_ThisHotKey and A_TimeSincePriorHotkey < 500)
-; {
-;  Send ^{enter} ; 							double enter sends code, BUT also sends an enter...  so not useful at present.
-; }
+#If, GetKeyState("Ctrl") ;start of context sensitive hotkeys
+s & c::
+  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+  Sleep 1500
+  Send ^k
+  Sleep 1500
+  Send charles jonathan ;charls and jon    
+  Sleep 1500
+  Send {enter}
+return
+#If ;end of context sensitive hotkeys
+
+#If, GetKeyState("Ctrl") ;start of context sensitive hotkeys
+s & g::
+  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+  Sleep 1500
+  Send ^k
+  Sleep 1500
+  Send g ;general
+  Sleep 1500
+  Send {enter}
+return
+#If ;end of context sensitive hotkeys
+
+#If, GetKeyState("Ctrl") ;start of context sensitive hotkeys
+s & d::
+  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+  Sleep 1500
+  Send ^k
+  Sleep 1500
+  Send d ;dev
+  Sleep 1500
+  Send {enter}
+return
+#If ;end of context sensitive hotkeys
+
+;^sj:: 
+;  Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
+;  Sleep 200
+;  Send ^k
+;  Sleep 200
+;  Send j
+;Return
+*/
+
+;#left::
+;WinGet, mm, MinMax, A
+;WinRestore, A
+;WinGetPos, X, Y,,,A
+;WinMove, A,, X-A_ScreenWidth, Y
+;if(mm = 1){
+;    WinMaximize, A
+;}
+;return
+;					;moves window from right to left monitor
+;#right::
+;WinGet, mm, MinMax, A
+;WinRestore, A
+;WinGetPos, X, Y,,,A
+;WinMove, A,, X+A_ScreenWidth, Y
+;if(mm = 1){
+;    WinMaximize, A
+;}
+;return
+					
+;-------------------------
+; MODIFIER KEYS
+;-------------------------
+
+; Because Dragon is a pain with the Windows key, add a quick letter and backspace to stop Dragon opening. Not working - causes win modifier key to fail
+;LWin::
+; Send {LWin}
+; Sleep 500
+; Send a
+; Sleep 500
+; Send {backspace}
+;Return
+
+;; remap winkey + xxx keys to right control (keyboard winkey not working)  
+;>^up::  
+; Send #{up}
+;Return
+
+;>^down::
+; Send #{down}
+;Return
+
+;>^right::
+; Send #{right}
+;Return
+
+;>^left::
+; Send #{left}
+;Return					
+
+;=====================================================================================================
+;=====================================================================================================
+
+; ;RStudio
+
+; #IfWinActive RStudio			; applies only to RStudio from now on
+
+; ;-------------------------
+; ; Dplyr commands
+; ;-------------------------
+
+; ::nl::             ; 'next line' - go to end of line, create '%>%' and press enter. Need to hit space first
+;  Send {backspace}
+;  Send {end}
+;  Send {space}
+;  Send +5
+;  Send +.
+;  Send +5
+;  Send {enter}
 ; Return
 
-;Mouseclick scripts:
+; ::sel::               
+;  Send select()
+;  Send {left}
+; Return
+; ::gb::
+;  Send group_by()
+;  Send {left}
+; Return
+; ::mut::               
+;  Send mutate()
+;  Send {left}
+; Return
+; ::tra::               
+;  Send transmute()
+;  Send {left}
+; Return
+; ::sz::
+;  Send summarise()
+;  Send {left}
+; Return
+; ::fil::               
+;  Send filter()
+;  Send {left}
+; Return
+; ::lj::               
+;  Send left_join()
+;  Send {left}
+; Return
+; ::tl::               
+;  Send tally()
+;  Send {left}
+; Return
 
- ~LButton::
- If (A_PriorHotKey = A_ThisHotKey and A_TimeSincePriorHotkey < 500)
- {
-  Send ^{left} 									;double click selects word
-  Send ^+{right}
- }
- Return
+; ::oo::               ; pipeline operator
+;  Send +5
+;  Send +.
+;  Send +5
+;  Send {enter}
+; Return
 
- ~RButton::
- If (A_PriorHotKey = A_ThisHotKey and A_TimeSincePriorHotkey < 500)
- {
-  Sleep 50 ; wait for right-click menu, fine tune for your PC		;double right click does 'paste click'
-  Send {Esc} ; close it
-  Send ^v ; or your double-right-click action here
- }
- Return
+; ::ooo::               ; as above but no enter at end - useful when inserting a line within an existing pipe.
+;  Send +5
+;  Send +.
+;  Send +5
+;  Send {down}
+;  Send {home}
+; Return
 
+; :*:`;dd:: ; dd %>%
+;  Send dd{space}
+;  Send +5
+;  Send +.
+;  Send +5
+;  Send {enter}
+; Return
 
-;HOTSTRINGS:
+; ;-------------------------
+; ; ggplot commands
+; ;-------------------------
 
-::`;sd:: 
- Send spark_disconnect_all()
-Return
-
-::`;t:: 
- Send traceback() 
- Send {enter}
-Return
-
-::`;js::               ;'jay source' - sources doc to current line by inserting a stop() at the line, then sourcing.
- Send {end}
- Send {enter}
- Send stop('Sourcing to this line, then stopping') 
- Sleep 500
- Send ^+s
- Send +{home}
-Return
-
-::`;rp::            
- Run Notepad
- WinActivate, Notepad
- Sleep 200
- Send ^v
- Sleep 200
- Send !e
- Sleep 200
- Send r
- Sleep 200
- Send \
- Sleep 200
- Send {tab}
- Sleep 200
- Send /
- Sleep 200
- Send !a
- Sleep 200
- Send {escape}
- Sleep 200
- Send ^a
- Send ^c
- Sleep 200
- Send !{F4}
- Sleep 200
- Send n
- Sleep 200
- WinActivate, RStudio
- Sleep 200
- Send ^v
-Return	                        ;'replace path' - replaces backslashes with forward slashes in file path. *Should have path in clipboard already*
+; ::gnl::             ; 'next line' - go to end of line, create '+' and press enter. Need to hit space first
+;  Send {backspace}
+;  Send {end}
+;  Send {space}
+;  Send {+}
+;  Send {enter}
+; Return
 
 
-:*:`;hs::
- Send ^+{home}
- Sleep 200 
- Send ^{enter}
- Sleep 500
- Send {down}
-Return					;'highlight start' [but actually 'buy from start']
+; ::gg::               ; cursor finishing in brackets
+;  Send ggplot(aes())
+;  Send {left 2}
+; Return
+; ::gp::               
+;  Send geom_point()
+;  Send {left}
+; Return
+; ::gl::               
+;  Send geom_line()
+;  Send {left}
+; Return
+; ::gs::               
+;  Send geom_smooth()
+;  Send {left}
+; Return
+; ::fw::               
+;  Send facet_wrap(~, scales = 'free')
+;  Send {left 18}
+; Return
+; ::ggs::               
+;  Send ggsave('.png')
+;  Send {left 6}
+; Return
 
-:*:`;mw::
- MouseMove 3820,175
- Sleep, 500
- Click
-Return					;'maximise window' of script
+; ;-------------------------
+; ; Other Rstudio commands
+; ;-------------------------
 
-::`;s::               ;'str()
- Send str()
- Send {left}
-Return
+; ^+a:: ; change appearance
+;  Send !t
+;  Sleep 200
+;  Send g
+;  Sleep 400
+;  Send {down 3}
+; ; Send {enter}
+; Return
 
-::`;h::               ;'head('
- Send head()
- Send {left}
-Return
+; ^w::
+;  Send ^{w}				;close tab
+; Return
 
-::hh::               ;hashkey followed by space.
- Send +3
- Send {space}
-Return
+; RAlt:: 					; send lines with right alt key
+;   Send ^{enter}
+; Return
 
-::oo::               ; pipeline operator
- Send +5
- Send +.
- Send +5
- Send {enter}
-Return
+; ^tab:: 				;switch tabs
+;   Send ^!{down}
+; Return
 
-::ooo::               ; as above but no enter at end - useful when inserting a line within an existing pipe.
- Send +5
- Send +.
- Send +5
- Send {down}
- Send {home}
-Return
+; ^e::				;cancel operation (switch to code window, press escape, and switch back to source)
+;  Send ^2
+;  Send {escape}
+;  Send ^1
+; Return
 
-:*:`;fu::             ;'full  underline'
- Send +3
- Send __________________________________________________________
- Send {enter}
- Send {enter}
-Return
+; ^n:: Send {Home}+{End}			;highlight line:
 
-:*:`;el::             ;'equal line'
- Send +3
- Send {+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}
- Send {enter}
-Return
+; ;Mouseclick scripts:
 
-::`;t::
- Send tempDF                ;note you have to push enter or space for the tempDFs... cost otherwise you can't do 'tempDF$' without first activating 'tempDF'
-Return
+;  ~LButton::
+;  If (A_PriorHotKey = A_ThisHotKey and A_TimeSincePriorHotkey < 500)
+;  {
+;   Send ^{left} 									;double click selects word
+;   Send ^+{right}
+;  }
+;  Return
 
-::`;td::
- Send tempDF$
-Return
+;  ~RButton::
+;  If (A_PriorHotKey = A_ThisHotKey and A_TimeSincePriorHotkey < 500)
+;  {
+;   Sleep 50 ; wait for right-click menu, fine tune for your PC		;double right click does 'paste click'
+;   Send {Esc} ; close it
+;   Send ^v ; or your double-right-click action here
+;  }
+;  Return
+
+
+; ;HOTSTRINGS:
+
+; ::`;sh::stop("here")
+
+; ::`;tb:: 
+;  Send traceback() 
+;  Send {enter}
+; Return
+
+; :*:`;hs::
+;  Send ^+{home}
+;  Sleep 200 
+;  Send ^{enter}
+;  Sleep 500
+;  Send {down}
+; Return					;'highlight start' [but actually 'buy from start']
+
+; ::`;b::               
+;  Send browser()
+; Return
+
+; ::`;s::               ;'str()
+;  Send str()
+;  Send {left}
+; Return
+
+; ::`;h::               ;'head('
+;  Send head()
+;  Send {left}
+; Return
+
+; ::`;t::               ;'head('
+;  Send tail()
+;  Send {left}
+; Return
+
+; ::hh::               ;hashkey followed by space.
+;  Send +3
+;  Send {space}
+; Return
+
+; :*:dd::               ;dollarsign. need space first, which then gets deleted
+;  Send {backspace}
+;  Send +4
+; Return
+
+; :*:`;fu::             ;'full  underline'
+;  Send +3
+;  Send ___________________________________________
+;  Send {enter}
+;  Send {enter}
+; Return
+
+; :*:`;el::             ;'equal line'
+;  Send +3
+;  Send {+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}{+}
+;  Send {enter}
+; Return
+
+; ::`;t::
+;  Send tempDF                ;note you have to push enter or space for the tempDFs... cost otherwise you can't do 'tempDF$' without first activating 'tempDF'
+; Return
+
+; ::`;td::
+;  Send tempDF$
+; Return
  
-::`;ts::
- Send tempDF_subset
-Return
+; :*:,,::`<- `		;hit comma twice to assign variable
 
-:*:,,::`<- `		;hit comma twice to assign variable
+; ;#### temporary bookmarking:
 
-;#### temporary bookmarking:
+; :*:`;mh::				; "Mark Here". "*" means no ending character required to activate
+;  Send {home}				
+;  Send `===== TEMPORARY BOOKMARK =====	
+;  Send {enter}
+; Return					
 
-:*:`;mh::				; "Mark Here". "*" means no ending character required to activate
- Send {home}				
- Send `===== TEMPORARY BOOKMARK =====	
- Send {enter}
-Return					
-
-:*:`;gm::				; "Go Mark". "*" means no ending character required to activate
- Send ^f				
- Sleep 200
- Send `===== TEMPORARY BOOKMARK =====	
- Send {enter}
- Sleep 200
- Send {escape}
-Return		
-
-::b1..::Bird10$
-::b3..::Bird30$
-::ne..::NAT.EX
-::nb..::NAT.BROAD
-::neb..::NAT.EX.BROAD
-::nbt..::NAT.BROAD.TEA
-::nebt..::NAT.EX.BROAD.TEA
-::nf..::NAT.FOREST
-::sn..::SP.NAT
-::st..::SP.TOT
-::si..::SP.INT				;variable names
-
-;# BOOKMARK NAVIGATION=====================================
-
-::`;b1::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 1.	
- Sleep 200
- Send {escape}
-Return		
+; :*:`;gom::				; "Go Mark". "*" means no ending character required to activate
+;  Send ^f				
+;  Sleep 200
+;  Send `===== TEMPORARY BOOKMARK =====	
+;  Send {enter}
+;  Sleep 200
+;  Send {escape}
+; Return		
 
 
-::`;b2::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 2.
- Sleep 200
- Send {escape}
-Return		
+; ;# BOOKMARK NAVIGATION=====================================
+
+; ::`;b1::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 1.	
+;  Sleep 200
+;  Send {escape}
+; Return		
 
 
-::`;b3::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 3.	
- Sleep 200
- Send {escape}
-Return		
-
-::`;b4::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 4.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b5::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 5.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b6::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 6.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b7::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 7.	
- Sleep 200
- Send {escape}
-Return		
+; ::`;b2::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 2.
+;  Sleep 200
+;  Send {escape}
+; Return		
 
 
-::`;b8::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 8.
- Sleep 200
- Send {escape}
-Return		
+; ::`;b3::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 3.	
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b4::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 4.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b5::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 5.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b6::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 6.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b7::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 7.	
+;  Sleep 200
+;  Send {escape}
+; Return		
 
 
-::`;b9::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 9.	
- Sleep 200
- Send {escape}
-Return		
-
-::`;b10::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 10.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b11::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 11.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b12::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 12.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b13::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 13.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b14::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 14.
- Sleep 200
- Send {escape}
-Return		
-
-::`;b15::				;press comma, b, m, <number> to navigate to bookmark
- Send ^f
- Sleep 200
- Send ^a {del}			
- Send +3 			;hash
- Sleep 200 
- Send {home} 
- Send {delete} 
- Send {end}	;deletes space automatically insterted before hash
- Send 15.
- Sleep 200
- Send {escape}
-Return		
+; ::`;b8::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 8.
+;  Sleep 200
+;  Send {escape}
+; Return		
 
 
-#IfWinActive
+; ::`;b9::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 9.	
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b10::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 10.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b11::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 11.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b12::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 12.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b13::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 13.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b14::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 14.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+; ::`;b15::				;press comma, b, m, <number> to navigate to bookmark
+;  Send ^f
+;  Sleep 200
+;  Send ^a {del}			
+;  Send +3 			;hash
+;  Sleep 200 
+;  Send {home} 
+;  Send {delete} 
+;  Send {end}	;deletes space automatically insterted before hash
+;  Send 15.
+;  Sleep 200
+;  Send {escape}
+; Return		
+
+
+; #IfWinActive
 					
-;=====================================================================================================
-;=====================================================================================================
-
-;FIREFOX
-
-#IfWinActive aahk_class MozillaWindowClass					;all commands bewteen the two IfWinActive commands only apply to FF.
-
-#1::
-Click 450,384
-Return				
-
-#2::
-Click 450, 431
-Return				
-				;gmail open first,2nd, 3rd mail etc
-#3::
-Click 450, 478
-Return				
-
-#4::
-Click 450, 531
-Return				
-
-^!p::
-Click 11,63			; save pdf
-Return
-
-#IfWinActive
-
-
-
-;=====================================================================================================
-;=====================================================================================================
-
-;ARCGIS
-
-#IfWinActive ArcMap					;all commands bewteen the two IfWinActive commands only apply to GIS.
-
-^p::
-MouseGetPos, xpos, ypos 
-Click 1380, 60
-Click %xpos%, %ypos%, 0		;pan
-Return	
-			
-^z::
-MouseGetPos, xpos, ypos 
-Click 1340, 60
-Click %xpos%, %ypos%, 0		;zoom
-Return	
-			
-+^s::
-MouseGetPos, xpos, ypos 
-Click 1535, 60
-Click %xpos%, %ypos%, 0		;select by rect
-Return	
-			
-^l::
-MouseGetPos, xpos, ypos 
-Click 1565, 60
-Click %xpos%, %ypos%, 0
-Return				;clear selectn
-
-^d::
-MouseGetPos, xpos, ypos 
-Click 1620, 60
-Click %xpos%, %ypos%, 0		;identify tool
-Return				
-
-^g::
-MouseGetPos, xpos, ypos 
-Click 1410, 60
-Click %xpos%, %ypos%, 0		;glob extent
-Return				
-
-^e::
-MouseGetPos, xpos, ypos 
-Click 1490, 60
-Click %xpos%, %ypos%, 0		;prev extent
-Return
-
-#c::
-Send {esc}
-Send !wt
-Sleep, 500
-Click 1700,500
-Return				;cata window
-
-#1::
-Send {esc}
-Send !wt
-Sleep, 500
-Click 1700,500
-Send {left}{left}{left}{left}{left}{left}{left}{left}{left}{home}f{right}{down}{down}{right}dd{right}
-Return											;expand default1
-
-#f::
-Send {esc}
-Send !wt
-Sleep, 500
-Click 1700,500
-Send {left}{left}{left}{left}{left}{left}{left}{left}{left}{home}f{right}{down}{down}{right}d{right}
-Return											;expand default
-
-#s::
-Send {esc}
-Send !wt
-Sleep, 500
-Click 1700,500
-Send {left}{left}{left}{left}{left}{left}{left}{left}{left}{home}{right}
-Return											;expand default1 shapefiles
-
-f3::
-Click 170, 80
-Return				; table of contents
-
-#IfWinActive							
-
-
 ;=====================================================================================================
 ;=====================================================================================================
 
@@ -1282,7 +1189,7 @@ Return				; cut and paste to TinnR/RStudio
  Send `===== TEMPORARY BOOKMARK =====	
 Return					
 
-:*:`;gm::				; "Go Mark". "*" means no ending character required to activate
+:*:`;gom::				; "Go Mark". "*" means no ending character required to activate
  Send ^f				
  Sleep 200
  Send `===== TEMPORARY BOOKMARK =====	
@@ -1293,50 +1200,39 @@ Return
 
 #IfWinActive
 
-			
-;=====================================================================================================
-;===================================================================================================
-;ADOBE READER
-
-#IfWinActive Adobe
-
-F11::
-Send !v
-Sleep, 200
-Send f
-Return				; full screen
-
-#IfWinActive
-
-
-#IfWinActive Internet Explorer
-
-RAlt & down::
- Send ^`-
-Return
-
-RAlt & up::                  ;not working
- Send ^`+
-Return
-
-#IfWinActive
-					
 ;=====================================================================================================
 ;===================================================================================================
 
 ;WINDOWS EXPLORER
 
 #IfWinActive ahk_class ExploreWClass 
-#w::               
- Send !d
-Return                                             ; highlights address bar. Note hotstrings don't work here.
+
+F6:: Send !d
 
 #IfWinActive
 
 #IfWinActive ahk_class CabinetWClass               ;2 possible window names
 
-#w::               
- Send !d
+F6:: Send !d
+
+#IfWinActive
+
+
+;=====================================================================================================
+;=====================================================================================================
+
+;GIT BASH
+
+#IfWinActive ahk_class mintty 
+
+:*:`;gs::git status {enter}
+:*:`;gda::git diff {enter} ;'git diff all'
+:*:`;gds::git diff{space} ;'git diff specific files'
+:*:`;ga::git add{space}
+:*:`;gp::git push origin master
+:*:`;gic::
+  Send git commit -m "" 
+  Send {left}
 Return
 
 #IfWinActive
@@ -1352,11 +1248,6 @@ Return
 
 :*:`;hg::
  Send Hey guys,
- Send {enter}{enter}			
-Return
-
-:*:`;hr::
- Send Hey Rach,
  Send {enter}{enter}			
 Return
 
@@ -1384,11 +1275,6 @@ Return
 
 :*:`;hg::
  Send Hey guys,
- Send {enter}{enter}			
-Return
-
-:*:`;hr::
- Send Hey Rach,
  Send {enter}{enter}			
 Return
 
@@ -1422,21 +1308,307 @@ Return
 ;=====================================================================================================
 ;=====================================================================================================
 
+#IfWinActive Visual Studio Code			; commands largely just copied from Rstudio code
+
+; toggle through open tabs - not working!
+F1::
+  Send {Ctrl down}{Tab}
+  ; Send {Tab down}{Tab up}
+  Sleep 5000
+  Send {Ctrl up}
+  ; MsgBox "Ctrl key now up", T1 ; T should time out, but not working.
+  
+  ; toggle cursor to indicate that control is now up:
+  Send {Down}
+  Sleep, 100
+  Send {Up}
+  Sleep, 100
+  Send {Down}
+  Sleep, 100
+  Send {Up}
+Return
+
+
+;----------------
+;main hotstrings - more below
+;----------------
+
+:*:`;si::sessionInfo()
+
+:*:`;sh::stop("here")
+
+:*:ee::               ;"end enter" - go to end of line then press enter, to start a new line. need space first, which then gets deleted
+ Send {backspace} 
+ Send {end}
+ Send {enter}
+Return
+
+:*:ll::                ;"line end" - go to end of line. need space first, which then gets deleted. Just easier than pressing {end} key
+ Send {backspace} 
+ Send {end}
+Return
+
+;:*:ss::               ;"home key" - go to start of line. need space first, ;which then gets deleted. Just easier than pressing {home} key
+; Send {backspace}
+; Send {home}
+;Return
+
+:*:`;tb:: 
+ Send traceback() 
+ Send {enter}
+Return
+
+:*:`;b::               
+ Send browser()
+Return
+
+:*:`;pr::           
+ Send print()
+ Send {left}
+Return
+
+:*:`;rh::          
+ Send print(head())
+ Send {left}
+ Send {left}
+Return
+
+::`;s::               
+ Send str()
+ Send {left}
+Return
+
+:*:`;h::               
+ Send head()
+ Send {left}
+Return
+
+:*:`;t::               
+ Send tail()
+ Send {left}
+Return
+
+::hh::               ;hashkey followed by space.
+ Send +3
+ Send {space}
+Return
+
+:*:dd::               ;dollarsign. need space first, which then gets deleted
+ Send {backspace}
+ Send +4
+Return
+
+:*:`;fu::             ;'full  underline'
+ Send +3
+ Send ____________________________________
+ Send {enter}
+ Send {enter}
+Return
+
+:*:`;el::             ;'equal line'
+ Send +3
+ Send {space}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}{*}
+ Send {enter}
+Return
+
+:*:,,::`<- `		;hit comma twice to assign variable
+
+;#### temporary bookmarking:
+
+:*:`;mh::				; "Mark Here". "*" means no ending character required to activate
+ Send {home}				
+ Send `===== TEMPORARY BOOKMARK =====	
+ Send {enter}
+Return					
+
+:*:`;gom::				; "Go Mark". "*" means no ending character required to activate
+ Send ^f				
+ Sleep 200
+ Send `===== TEMPORARY BOOKMARK =====	
+ Send {enter}
+ Sleep 200
+ Send {escape}
+Return		
+
+;-------------------------
+; navigation
+;-------------------------
+
+; console focus - hit space first, which then gets deleted
+:*:`;cc:: 
+ Send {backspace}
+ Send ^k
+ Sleep 100
+ Send {2}
+Return		
+
+; editor focus - hit space first, which then gets deleted
+:*:`;ef:: 
+ Send {backspace}
+ Send ^k
+ Sleep 100
+ Send {1}
+Return		
+
+; kill terminal - hit space first, which then gets deleted
+:*:`;kk:: 
+ Send {backspace}
+ Send ^k
+ Sleep 100
+ Send {2}
+ Sleep 100
+ Send ^!k
+Return		
+
+;-------------------------
+; SQL
+;-------------------------
+
+:*:`;sa:: 
+ Send SELECT * FROM
+ Send {space}
+Return
+:*:`;stt:: 
+ Send SELECT TOP 10 * FROM
+ Send {space}
+Return
+
+;-------------------------
+; Dplyr commands
+;-------------------------
+
+::nl::             ; 'next line' - go to end of line, create '%>%' and press enter. Need to hit space first
+ Send {backspace}
+ Send {end}
+ Send {space}
+ Send +5
+ Send +.
+ Send +5
+ Send {enter}
+Return
+
+::sel::               
+ Send select()
+ Send {left}
+Return
+::gb::
+ Send group_by()
+ Send {left}
+Return
+::mut::               
+ Send mutate()
+ Send {left}
+Return
+::tra::               
+ Send transmute()
+ Send {left}
+Return
+::sz::
+ Send summarise()
+ Send {left}
+Return
+::fil::               
+ Send filter()
+ Send {left}
+Return
+::lj::               
+ Send left_join()
+ Send {left}
+Return
+::tl::               
+ Send tally()
+ Send {left}
+Return
+
+::oo::               ; pipeline operator
+ Send +5
+ Send +.
+ Send +5
+ Send {enter}
+Return
+
+::ooo::               ; as above but no enter at end - useful when inserting a line within an existing pipe.
+ Send +5
+ Send +.
+ Send +5
+ Send {down}
+ Send {home}
+Return
+
+:*:`;dd:: ; dd %>%
+ Send dd{space}
+ Send +5
+ Send +.
+ Send +5
+ Send {enter}
+Return
+
+;-------------------------
+; ggplot commands
+;-------------------------
+
+::gps::             ; 'plus sign' - go to end of line, create '+' and press enter. Need to hit space first
+ Send {backspace}
+ Send {end}
+ Send {space}
+ Send {+}
+ Send {enter}
+Return
+
+::gpsne::             ; 'plus sign no enter' - go to end of line, create '+' but no pressing enter. Need to hit space first
+ Send {backspace}
+ Send {end}
+ Send {space}
+ Send {+}
+ Send {down}
+ Send {home}
+Return
+
+::gg::               ; cursor finishing in brackets
+ Send ggplot(aes())
+ Send {left 2}
+Return
+::gp::               
+ Send geom_point()
+ Send {left}
+Return
+::gl::               
+ Send geom_line()
+ Send {left}
+Return
+::gs::               
+ Send geom_smooth()
+ Send {left}
+Return
+::fw::               
+ Send facet_wrap(~, scales = 'free')
+ Send {left 18}
+Return
+::ggs::               
+ Send ggsave('.png')
+ Send {left 6}
+Return
+
+;-------------------------
+; Other Rstudio commands
+;-------------------------
+
+RAlt:: 					; send lines with right alt key
+  Send ^{enter}
+Return
+
+^e::				;cancel operation (switch to code window, press escape, and switch back to source)
+ Send ^2
+ Send {escape}
+ Send ^1
+Return
+
+#IfWinActive
+
+;=====================================================================================================
+;=====================================================================================================
+
 ;=====================================================================================================
 ;=====================================================================================================
 ;=====================================================================================================
 ;=====================================================================================================
-
-
-
-
-;MOUSE POSITION INFO FROM http://www.autohotkey.com/docs/Tutorial.htm:
-;Mouse Clicks: To send a mouse click to a window it is first necessary to determine the X and Y coordinates where the click should occur. This can be done with either AutoScriptWriter or Window ;Spy, which are included with AutoHotkey. The following steps apply to the Window Spy method:
-
-;    Launch Window Spy from a script's tray-icon menu or the Start Menu.
- ;   Activate the window of interest either by clicking its title bar, alt-tabbing, or other means (Window Spy will stay "always on top" by design).
-  ;  Move the mouse cursor to the desired position in the target window and write down the mouse coordinates displayed by Window Spy (or on Windows XP and earlier, press Shift-Alt-Tab to activate ;Window Spy so that the "frozen" coordinates can be copied and pasted).
- ;   Apply the coordinates discovered above to the Click35 command. The following example clicks the left mouse button:
-  ;  Click 112, 223
-
-;To move the mouse without clicking, use MouseMove36. To drag the mouse, use MouseClickDrag37. 
