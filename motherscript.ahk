@@ -96,11 +96,13 @@ Return
 
 ; NOTEPAD: switch to open program if there is one, otherwise open
 ^f6:: 
-  if WinExist("Notepad")
+  if WinExist("Black Notepad")
+; if WinExist("Notepad")
 ; if WinExist("Jarte")
   WinActivate 
 else
-  Run C:\Windows\system32\notepad.exe
+  ;Run C:\Windows\system32\notepad.exe
+  Run C:\Program Files\WindowsApps\55809savaged.BlackNotepad_1.0.9.0_neutral__p2aarvyam9pfc\BlackNotepad\BlackNotepad.exe
 ;  Run C:\Program Files (x86)\Jarte\Jarte.exe
 Return
 
