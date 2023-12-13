@@ -71,7 +71,9 @@ Return
 if WinExist("Message")
   WinActivate 
 else
-  Run C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE
+  {
+        MsgBox, "No message window to switch to"
+    }
 Return
 
 
@@ -746,8 +748,8 @@ Return
  Send {enter}{enter}			
 Return
 
-:*:`;hc::
- Send Hey Charles,
+:*:`;hs::
+ Send Hey Sophia,
  Send {enter}{enter}			
 Return
 
