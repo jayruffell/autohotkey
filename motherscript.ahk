@@ -24,7 +24,6 @@ Return
 
 ; temp hotstrings for current project - "open current folder" and "open current code" in dragon
 ^+f8:: Run "C:\dev\r\packages\ausmodels\dev"
-^+f9:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\dev\r\rob\line-outages-PBI\GEN-737"
 ^+f10:: Run C:\dev\r\packages\ausmodels\dev\
 ^+f11:: Run C:\dev\r\packages\ausmodels\dev\compare-model-outputs
 ^+!f12:: Run C:\dev\r\packages\ausmodels\dev\model-outputs
@@ -48,8 +47,7 @@ f3::
  Sleep 500
  Send {enter}
 f5:: Send !{f4}
-F7:: Run C:\Users\Owner\AppData\Local\Microsoft\WindowsApps\Slack.exe
-
+F7:: Run C:\Program Files\WindowsApps\MSTeams_23306.3315.2560.6525_x64__8wekyb3d8bbwe\ms-teams.exe
 f9:: #+s ; snipping tool
 
 ; CHROME: switch to open program if there is one, otherwise open
@@ -59,6 +57,24 @@ if WinExist("Google Chrome")
 else
   Run C:\Program Files\Google\Chrome\Application\chrome.exe
 Return
+
+; OUTLOOK: switch to open program if there is one, otherwise open
+^F9:: 
+if WinExist("Outlook")
+  WinActivate 
+else
+  Run C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE
+Return
+
+; OUTLOOK: as above, but for new message window
+^+F9:: 
+if WinExist("Message")
+  WinActivate 
+else
+  Run C:\Program Files\Microsoft Office\root\Office16\OUTLOOK.EXE
+Return
+
+
 ^+F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Profile 1"
 +F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Default"
 
@@ -106,16 +122,6 @@ else
 ;  Run C:\Program Files (x86)\Jarte\Jarte.exe
 Return
 
-/*
-; RSTUDIO: switch to open program if there is one, otherwise open project I work on most often
-^f6:: 
-if WinExist("RStudio")
-  WinActivate 
-else
-  Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\Projects\windfarm model\windfarm model.Rproj
-  ;Run C:\Program Files\RStudio\bin\rstudio.exe
-Return
-*/
 ; VS Code: switch to open program if there is one, otherwise open
 ^f7:: 
 if WinExist("Visual Studio Code")
@@ -475,7 +481,12 @@ Return
 
 ; Opening via hotstrings - other
 
-:*:`;ez::ez2view
+:*:`;bjm::
+  Send B3ingjohnmalkovich
+  Send +1
+  Send {Enter}
+Return
+
 :*:`;jh::jay@haastenergy.com
 :*:`;rj::ruffell.jay@gmail.com
 :*:`;fp::Spring@21{!}
