@@ -47,7 +47,7 @@ f3::
  Sleep 500
  Send {enter}
 f5:: Send !{f4}
-F7:: Run C:\Program Files\WindowsApps\MSTeams_23306.3315.2560.6525_x64__8wekyb3d8bbwe\ms-teams.exe
+F7:: Run C:\Program Files\WindowsApps\MSTeams_23335.232.2637.4844_x64__8wekyb3d8bbwe\ms-teams.exe
 f9:: #+s ; snipping tool
 
 ; CHROME: switch to open program if there is one, otherwise open
@@ -144,14 +144,26 @@ Return
     }
 return
 
+; Define a hotkey to activate Outlook reminders using window title
+^F11:: ; This sets the hotkey to Ctrl + Alt + P. You can change it to any other combination.
+    IfWinExist, Reminder
+    {
+        WinActivate
+    }
+    else
+    {
+        MsgBox, "no reminders window based on autohotkey criteria "
+    }
+return
+
+
 #+f8:: Run "C:\Program Files\Microsoft Office\Root\Office16\EXCEL.EXE"
 ; open AHK script to edit with VS Code
-!^f8:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\autohotkey\" 
+!^f8:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\Users\Owner\Documents\autohotkey\" 
 ; reload AHK script
-!^f9:: Run "C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\autohotkey\autohotkey script_ROG.ahk" 
+!^f9:: Run "C:\Users\Owner\Documents\autohotkey\motherscript.ahk" 
 ^f10:: Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe "C:\dev\r\jay\VS-Code-scratchpad\"
 ;stacks report/power notes stuff
-^F11:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --new-window https://app.powerbi.com/groups/df569d6a-0f19-4d8e-b25f-9e784c1b0d84/reports/1be3317c-b5a9-4b58-ac0f-4bc28e729677/ReportSectiondfb2df74632fbf978b37
 ^F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --new-window https://haastenergy.atlassian.net/wiki/spaces/ASR/overview
 #+F11:: Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\reference docs\DUID info.xlsx
 
@@ -298,57 +310,32 @@ Return
 ;-------------------------
 
 ; Function to click win 1, win 2 etc. calculates the different window coords by multiplying the window number by the panel height (height in taskbar - can calc using window spy) so easy to update for different screen sizes.
-ClickTaskbarWin_vert(win_num) ;tb on side of screen
+ClickTaskbarWin_vert(win_num, xcoord, ycoord_win1, panel_height) ;tb on side of screen
 {
-  ;-----------------
-  ; UPDATE THESE IF SCREEN OR TASKBAR POS CHANGES
-  xcoord := 3700 ;3381
-  ycoord_win1 := 285 ;119
-  panel_height := 120 ;80
-  ;-----------------
-
   ycoord := ycoord_win1 + panel_height*(win_num-1)
   CoordMode, Mouse, Screen
   MouseClick, left, xcoord, ycoord
-  ; ;move to middle of selected window
-  ; ; not working - move to middle of screen instead
-  ; WinGetPos, x_0, y_0, x_max, y_max, A
-  ; MouseMove, (x_max - x_0)*0.5, (x_max - x_0)*0.5
-  MouseMove, A_ScreenWidth*0.5, A_ScreenHeight*0.5 
-  ; restore default/
   CoordMode, Mouse, Window 
 }
 ; Function to click win 1, win 2 etc. calculates the different window coords by multiplying the window number by the panel height (height in taskbar - can calc using window spy) so easy to update for different screen sizes.
-ClickTaskbarWin_hor(win_num) ;at top/botty
+ClickTaskbarWin_hor(win_num, ycoord, xcoord_win1, panel_width) ;at top/botty
 {
-  ;-----------------
-  ; UPDATE THESE IF SCREEN OR TASKBAR POS CHANGES
-  ycoord := 50 ;50 for top, 2100 for botty
-  xcoord_win1 := 460
-  panel_width := 410
-  ;-----------------
-
   xcoord := xcoord_win1 + panel_width*(win_num-1)
   CoordMode, Mouse, Screen
   MouseClick, left, xcoord, ycoord
-  ; ;move to middle of selected window
-  ; ; not working - move to middle of screen instead
-  ; WinGetPos, x_0, y_0, x_max, y_max, A
-  ; MouseMove, (x_max - x_0)*0.5, (x_max - x_0)*0.5
-  ;MouseMove, A_ScreenWidth*0.5, A_ScreenHeight*0.5 
-  ; restore default/
   CoordMode, Mouse, Window 
 }
-^!F1::ClickTaskbarWin_hor(1) ;_hor or _vert
-^!F2::ClickTaskbarWin_hor(2)
-^!F3::ClickTaskbarWin_hor(3)
-^!F4::ClickTaskbarWin_hor(4)
-^!F5::ClickTaskbarWin_hor(5)
-^!F6::ClickTaskbarWin_hor(6)
-^!F7::ClickTaskbarWin_hor(7)
-#!F8::ClickTaskbarWin_hor(8)
+^!F1::ClickTaskbarWin_hor(1, 50, 450, 410) ;_hor or _vert
+^!F2::ClickTaskbarWin_hor(2, 50, 450, 410)
+^!F3::ClickTaskbarWin_hor(3, 50, 450, 410)
+^!F4::ClickTaskbarWin_hor(4, 50, 450, 410)
+^!F5::ClickTaskbarWin_hor(5, 50, 450, 410)
+^!F6::ClickTaskbarWin_hor(6, 50, 450, 410)
+^!F7::ClickTaskbarWin_hor(7, 50, 450, 410)
+#!F8::ClickTaskbarWin_hor(8, 50, 450, 410)
 ;#!F9::ClickTaskbarWin_hor(9)
 ;+!F9::ClickTaskbarWin_vert(9)
+
 
 ;-------------------------
 ; moving windows around monitors - replaces shitty win11 commands
@@ -766,13 +753,26 @@ Return
 ;=====================================================================================================
 					
 ;Spyder
-
 #IfWinActive ahk_exe pythonw.exe
 ::hh::               ;hashkey followed by space.
  Send +3
  Send {space}
 Return
 
+#IfWinActive
+
+;=====================================================================================================
+;=====================================================================================================
+
+#IfWinActive ahk_exe ms-teams.exe
+#^!F1::ClickTaskbarWin_vert(1, 500, 740, 110) ;_hor or _vert
+#^!F2::ClickTaskbarWin_vert(2, 500, 740, 110)
+#^!F3::ClickTaskbarWin_vert(3, 500, 740, 110)
+#^!F4::ClickTaskbarWin_vert(4, 500, 740, 110) 
+#^!F5::ClickTaskbarWin_vert(5, 500, 740, 110)
+#^!F6::ClickTaskbarWin_vert(6, 500, 740, 110)
+#^!F7::ClickTaskbarWin_vert(7, 500, 740, 110)
+#^!F8::ClickTaskbarWin_vert(8, 500, 740, 110)
 #IfWinActive
 
 ;=====================================================================================================
