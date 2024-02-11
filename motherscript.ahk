@@ -703,6 +703,15 @@ Return
 
 #IfWinActive Outlook 
 
+#^!F1::ClickTaskbarWin_vert(1, 500, 740, 210) ;_hor or _vert
+#^!F2::ClickTaskbarWin_vert(2, 500, 740, 210)
+#^!F3::ClickTaskbarWin_vert(3, 500, 740, 210)
+#^!F4::ClickTaskbarWin_vert(4, 500, 740, 210) 
+#^!F5::ClickTaskbarWin_vert(5, 500, 740, 210)
+#^!F6::ClickTaskbarWin_vert(6, 500, 740, 210)
+#^!F7::ClickTaskbarWin_vert(7, 500, 740, 210)
+#^!F8::ClickTaskbarWin_vert(8, 500, 740, 210)
+
 :*:`;hg::
  Send Hey guys,
  Send {enter}{enter}			
