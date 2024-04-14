@@ -32,7 +32,7 @@ Return
 !f1:: Run C:\dev\r\jon\aussie_models\utility_wind_solar_curt_combined
 !f2:: Run C:\dev\r\packages\ausmodels\dev
 ;!f3:: Run C:\Users\Owner\OneDrive - Haast Energy Trading\Documents\
-!f4:: Run C:\dev\r
+!f4:: Run C:\dev\HomeHealthCare\
 !f5:: Run C:\Users\Owner\Downloads\
 ;!f12:: Run C:\Program Files (x86)\Common Files\Nuance\NaturallySpeaking15\dragonbar.exe
 ; !f12:: Run C:\Program Files (x86)\Common Files\Nuance\NaturallySpeaking15\dragonbar_exe_renamedToAvoidWinkeyProblem.exe
@@ -47,7 +47,7 @@ f3::
  Sleep 500
  Send {enter}
 f5:: Send !{f4}
-F7:: Run C:\Program Files\WindowsApps\MSTeams_24004.1307.2669.7070_x64__8wekyb3d8bbwe\ms-teams.exe
+F7:: Run C:\Program Files\WindowsApps\MSTeams_24060.2623.2790.8046_x64__8wekyb3d8bbwe\ms-teams.exe
 f9:: #+s ; snipping tool
 
 ; CHROME: switch to open program if there is one, otherwise open
@@ -57,6 +57,8 @@ if WinExist("Google Chrome")
 else
   Run C:\Program Files\Google\Chrome\Application\chrome.exe
 Return
+
+^F8:: Run "C:\Users\Owner\Desktop\to do today.txt"
 
 ; OUTLOOK: switch to open program if there is one, otherwise open
 ^F9:: 
@@ -132,17 +134,17 @@ else
   Run C:\Users\Owner\AppData\Local\Programs\Microsoft VS Code\Code.exe
 Return
 
-; Define a hotkey to activate Power BI Desktop using its window title
-^F8:: ; This sets the hotkey to Ctrl + Alt + P. You can change it to any other combination.
-    IfWinExist, Power BI Desktop
-    {
-        WinActivate
-    }
-    else
-    {
-        MsgBox, "haven't set up functionality to open PBI... just got to find the executable."
-    }
-return
+; ; Define a hotkey to activate Power BI Desktop using its window title
+; ^F8:: ; This sets the hotkey to Ctrl + Alt + P. You can change it to any other combination.
+;     IfWinExist, Power BI Desktop
+;     {
+;         WinActivate
+;     }
+;     else
+;     {
+;         MsgBox, "haven't set up functionality to open PBI... just got to find the executable."
+;     }
+; return
 
 ; Define a hotkey to activate Outlook reminders using window title
 ^F11:: ; This sets the hotkey to Ctrl + Alt + P. You can change it to any other combination.
