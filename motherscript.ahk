@@ -58,7 +58,12 @@ else
   Run C:\Program Files\Google\Chrome\Application\chrome.exe
 Return
 
-^F8:: Run "C:\Users\Owner\Desktop\to do today.txt"
+^F8:: 
+if WinExist("to do today")
+  WinActivate 
+else
+  openFileWithBlackNotepad("C:\Users\Owner\Desktop\to do today.txt")
+Return
 
 ; OUTLOOK: switch to open program if there is one, otherwise open
 ^F9:: 
@@ -120,10 +125,12 @@ Return
 ; if WinExist("Notepad")
 ; if WinExist("Jarte")
   WinActivate 
-else
+else {
+  ; Run C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2401.26.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
   ;Run C:\Windows\system32\notepad.exe
-  Run C:\Program Files\WindowsApps\55809savaged.BlackNotepad_1.0.9.0_neutral__p2aarvyam9pfc\BlackNotepad\BlackNotepad.exe
-;  Run C:\Program Files (x86)\Jarte\Jarte.exe
+  openBlackNotepadCentred()
+  ;  Run C:\Program Files (x86)\Jarte\Jarte.exe
+}
 Return
 
 ; VS Code: switch to open program if there is one, otherwise open
@@ -178,6 +185,26 @@ return
 ; Some hacks for feeding into Dragon commands (which won't let me do Windows Key + x commands)
 #+!d:: Send {LWinDown} {d} {LWinUp}
 #+!r:: Send {LWinDown} {r} {LWinUp}
+
+openBlackNotepad()
+{
+  Run C:\Program Files\WindowsApps\55809savaged.BlackNotepad_1.0.9.0_neutral__p2aarvyam9pfc\BlackNotepad\BlackNotepad.exe
+}
+openBlackNotepadCentred()
+{
+  openBlackNotepad()
+  Sleep 1000
+  CenterActiveWindow()
+}
+openFileWithBlackNotepad(file_path)
+{
+ openBlackNotepadCentred()
+send ^o
+sleep 1000
+send %file_path%
+sleep 500
+send {enter}
+}
 
 ;-------------------------
 ; autoomating "snip it quad" commands
@@ -368,8 +395,8 @@ Return
 Return
 CenterActiveWindow()
 {
-    windowWidth := A_ScreenWidth * 0.7 ; desired width
-    windowHeight := A_ScreenHeight * 0.9 ; desired height
+    windowWidth := A_ScreenWidth * 0.5 ; desired width
+    windowHeight := A_ScreenHeight * 0.95 ; desired height
     WinGetTitle, windowName, A
     WinMove, %windowName%, , A_ScreenWidth/2-(windowWidth/2), A_ScreenHeight/2-(windowHeight/2), windowWidth, windowHeight
 }
