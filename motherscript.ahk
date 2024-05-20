@@ -47,7 +47,7 @@ f3::
  Sleep 500
  Send {enter}
 f5:: Send !{f4}
-F7:: Run C:\Program Files\WindowsApps\MSTeams_24060.2623.2790.8046_x64__8wekyb3d8bbwe\ms-teams.exe
+F7:: Run C:\Program Files\WindowsApps\MSTeams_24102.2223.2870.9480_x64__8wekyb3d8bbwe\ms-teams.exe
 f9:: #+s ; snipping tool
 
 ; CHROME: switch to open program if there is one, otherwise open
