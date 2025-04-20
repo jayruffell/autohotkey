@@ -47,7 +47,7 @@ f3::
  Sleep 500
  Send {enter}
 f5:: Send !{f4}
-F7:: Run C:\Program Files\WindowsApps\MSTeams_24102.2223.2870.9480_x64__8wekyb3d8bbwe\ms-teams.exe
+F7:: Run C:\Program Files\WindowsApps\MSTeams_25060.205.3499.6849_x64__8wekyb3d8bbwe\ms-teams.exe
 f9:: #+s ; snipping tool
 
 ; CHROME: switch to open program if there is one, otherwise open
@@ -58,12 +58,7 @@ else
   Run C:\Program Files\Google\Chrome\Application\chrome.exe
 Return
 
-^F8:: 
-if WinExist("to do today")
-  WinActivate 
-else
-  openFileWithBlackNotepad("C:\Users\Owner\Desktop\to do today.txt")
-Return
+;***^F8 IS AVAILABLe ***
 
 ; OUTLOOK: switch to open program if there is one, otherwise open
 ^F9:: 
@@ -84,8 +79,9 @@ else
 Return
 
 
-^+F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Profile 1"
-+F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Default"
+^+F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Default"
++F12:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Profile 1"
+!^+F10:: Run C:\Program Files\Google\Chrome\Application\chrome.exe --profile-directory="Profile 2"
 
 
 ; VS Code: specific workspaces (more below tho)
@@ -121,15 +117,17 @@ Return
 
 ; NOTEPAD: switch to open program if there is one, otherwise open
 ^f6:: 
-  if WinExist("Black Notepad")
+  if WinExist("Word")
+  ; if WinExist("Black Notepad")
 ; if WinExist("Notepad")
 ; if WinExist("Jarte")
   WinActivate 
 else {
   ; Run C:\Program Files\WindowsApps\Microsoft.WindowsNotepad_11.2401.26.0_x64__8wekyb3d8bbwe\Notepad\Notepad.exe
   ;Run C:\Windows\system32\notepad.exe
-  openBlackNotepadCentred()
+  ; openBlackNotepadCentred()
   ;  Run C:\Program Files (x86)\Jarte\Jarte.exe
+  Run "C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"
 }
 Return
 
@@ -464,6 +462,14 @@ if not WinActive("ahk_group Explorer")
 Return
 
 :*:`;tj::{enter}{enter}Thanks,{enter}{enter}Jay
+
+:*:`;nm::
+  Send {enter}{enter}
+  Send Ng
+  Send {U+0101}
+  Send {space}mihi,
+  Send {enter}{enter}Jay
+  Return
 
 :*:`;cf:: ;confluence. "general" and "r" spaces only are relevant to me
  Run C:\Program Files\Google\Chrome\Application\chrome.exe https://haastenergy.atlassian.net/wiki/spaces/R/overview
@@ -1109,6 +1115,23 @@ Return
  Send ^2
  Send {escape}
  Send ^1
+Return
+
+#IfWinActive
+
+
+;-------------------------
+; Excel
+;-------------------------
+
+#IfWinActive ahk_class XLMAIN 
+
+^+PgDn::
+  MsgBox, "By default this shortcut unexpectedly multi-selects tabs, which I don't want. So this AHK message box is overriding that to ensure no unexpected behaviour."
+Return
+
+^+PgUp::
+  MsgBox, "By default this shortcut unexpectedly multi-selects tabs, which I don't want. So this AHK message box is overriding that to ensure no unexpected behaviour."
 Return
 
 #IfWinActive
